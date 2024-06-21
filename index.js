@@ -463,6 +463,130 @@ app.delete('/emprestimos/:id', (req, res) => {
 app.get('/', (req, res) => {
     res.sendFile(__dirname + '/home.html');
 });
+app.post('/usuarios', (req, res) => {
+    const { nome, email } = req.body;
+
+    connection.query(
+        'INSERT INTO usuarios (nome, email) VALUES (?, ?)',
+        [nome, email],
+        (err, result) => {
+            if (err) {
+                console.error('Erro ao adicionar usuário:', err);
+                res.status(500).json({ message: 'Erro interno no servidor' });
+                return;
+            }
+            res.status(201).json({ message: 'Usuário adicionado com sucesso' });
+        }
+    );
+});
+app.get('/usuarios', (req, res) => {
+    connection.query('SELECT * FROM usuarios', (err, result) => {
+        if (err) {
+            console.error('Erro ao obter usuários:', err);
+            res.status(500).json({ message: 'Erro interno no servidor' });
+            return;
+        }
+        res.json(result);
+    });
+});
+app.put('/usuarios/:id', (req, res) => {
+    const { nome, email } = req.body;
+    const id = req.params.id; // Capturar o ID do usuário da URL
+
+    connection.query(
+        'UPDATE usuarios SET nome = ?, email = ? WHERE id = ?',
+        [nome, email, id],
+        (err, result) => {
+            if (err) {
+                console.error('Erro ao atualizar usuário:', err);
+                res.status(500).json({ message: 'Erro interno no servidor' });
+                return;
+            }
+            res.json({ message: 'Usuário atualizado com sucesso' });
+        }
+    );
+});
+app.delete('/usuarios/:id', (req, res) => {
+    const id = req.params.id;
+
+    connection.query('DELETE FROM usuarios WHERE id = ?', [id], (err, result) => {
+        if (err) {
+            console.error('Erro ao remover usuário:', err);
+            res.status(500).json({ message: 'Erro interno no servidor' });
+            return;
+        }
+        res.json({ message: 'Usuário removido com sucesso' });
+    });
+});
+
+app.post('/multas', (req, res) => {
+    const { emprestimo_id, valor, data_multa, pago } = req.body;
+
+    connection.query(
+        'INSERT INTO multas (emprestimo_id, valor, data_multa, pago) VALUES (?, ?, ?, ?)',
+        [emprestimo_id, valor, data_multa, pago],
+        (err, result) => {
+            if (err) {
+                console.error('Erro ao adicionar multa:', err);
+                res.status(500).json({ message: 'Erro interno no servidor' });
+                return;
+            }
+            res.status(201).json({ message: 'Multa adicionada com sucesso' });
+        }
+    );
+});
+app.get('/multas', (req, res) => {
+    connection.query('SELECT * FROM multas', (err, result) => {
+        if (err) {
+            console.error('Erro ao obter multas:', err);
+            res.status(500).json({ message: 'Erro interno no servidor' });
+            return;
+        }
+        res.json(result);
+    });
+});
+app.put('/multas/:id', (req, res) => {
+    const { valor, data_multa, pago } = req.body;
+    const id = req.params.id; // Capturar o ID da multa da URL
+
+    connection.query(
+        'UPDATE multas SET valor = ?, data_multa = ?, pago = ? WHERE id = ?',
+        [valor, data_multa, pago, id],
+        (err, result) => {
+            if (err) {
+                console.error('Erro ao atualizar multa:', err);
+                res.status(500).json({ message: 'Erro interno no servidor' });
+                return;
+            }
+            res.json({ message: 'Multa atualizada com sucesso' });
+        }
+    );
+});
+app.delete('/multas/:id', (req, res) => {
+    const id = req.params.id;
+
+    connection.query('DELETE FROM multas WHERE id = ?', [id], (err, result) => {
+        if (err) {
+            console.error('Erro ao remover multa:', err);
+            res.status(500).json({ message: 'Erro interno no servidor' });
+            return;
+        }
+        res.json({ message: 'Multa removida com sucesso' });
+    });
+});
+
+
+// Rota para obter todos os logs
+app.get('/logs', (req, res) => {
+    connection.query('SELECT * FROM log', (err, results) => {
+      if (err) {
+        console.error('Erro ao obter logs:', err);
+        res.status(500).json({ message: 'Erro interno no servidor' });
+        return;
+      }
+      res.json(results); // Retorna os resultados como JSON
+    });
+  });
 
 // Rota para as proximas páginas
 app.get('/cadastrar_autor', (req, res) => {
@@ -486,7 +610,15 @@ app.get('/detalhes', (req, res) => {
 app.get('/emprestimo', (req, res) => {
     res.sendFile(__dirname + '/Emprestimo.html');
 }); 
-
+app.get('/usuari', (req, res) => {
+    res.sendFile(__dirname + '/usuarios.html');
+}); 
+app.get('/mult', (req, res) => {
+    res.sendFile(__dirname + '/multas.html');
+}); 
+app.get('/lo', (req, res) => {
+    res.sendFile(__dirname + '/log.html');
+}); 
 // Iniciar o servidor
 app.listen(port, () => {
     console.log(`Servidor rodando em http://localhost:${port}`);

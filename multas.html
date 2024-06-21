@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerenciar Multas</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f0f0;
+            display: flex;
+        }
+
+        .sidebar {
+            width: 250px;
+            background-color: #0056b3;
+            color: #ffffff;
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100%;
+            padding: 20px;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .sidebar h2 {
+            margin-bottom: 20px;
+        }
+
+        .sidebar a {
+            color: #ffffff;
+            text-decoration: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            transition: background-color 0.3s;
+        }
+
+        .sidebar a:hover {
+            background-color: #004080;
+        }
+
+        .container {
+            margin-left: 250px;
+            padding: 20px;
+            width: calc(100% - 250px);
+            box-sizing: border-box;
+            max-width: 100%;
+            background-color: #fff;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        label {
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        input[type="text"], input[type="number"], input[type="date"], select {
+            padding: 8px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+            width: 100%;
+        }
+
+        button[type="submit"], button[type="button"] {
+            padding: 12px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        button[type="submit"]:hover, button[type="button"]:hover {
+            background-color: #0056b3;
+        }
+
+        .alert {
+            color: red;
+            margin-top: 15px;
+            text-align: center;
+        }
+
+        .multas-container {
+            margin-top: 20px;
+        }
+
+        .multas-container ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        .multas-container li {
+            padding: 15px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+            background-color: #fff;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .multas-container li button {
+            padding: 8px 12px;
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 15px;
+            cursor: pointer;
+        }
+
+        .multas-container li button.edit {
+            background-color: #ffc107;
+        }
+
+        .multas-container li button.edit:hover {
+            background-color: #ffca2c;
+        }
+
+        .multas-container li button.remove {
+            margin-left: 10px;
+        }
+
+        .multas-container li button.remove:hover {
+            background-color: #e74c3c;
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <h2>Menu</h2>
+        <a href="/">Home</a>
+        <a href="editora">Cadastrar Editora </a>
+        <a href="cadastrar_autor">Cadastrar Autor</a>
+        <a href="index">Cadastrar Livro</a>
+        <a href="categoria">Categorias</a>
+        <a href="detalhes">Detalhes Livros</a>
+        <a href="reservaa">Reservas</a>
+        <a href="emprestimo">Emprestimos</a>
+        <a href="usuari">Usuarios</a>
+        <a href="mult">Multas</a>
+        <a href="lo">Log</a>
+        <!-- Adicione mais links conforme necessário -->
+    </div>
+
+    <div class="container">
+        <h2>Gerenciar Multas</h2>
+        <form id="multaForm">
+            <label for="emprestimo_id">ID do Empréstimo:</label>
+            <input type="number" id="emprestimo_id" name="emprestimo_id" required>
+            <label for="valor">Valor:</label>
+            <input type="number" id="valor" name="valor" step="0.01" required>
+            <label for="data_multa">Data da Multa:</label>
+            <input type="date" id="data_multa" name="data_multa" required>
+            <label for="pago">Pago:</label>
+            <select id="pago" name="pago" required>
+                <option value="0">Não</option>
+                <option value="1">Sim</option>
+            </select>
+            <button type="submit">Cadastrar</button>
+        </form>
+
+        <div class="multas-container">
+            <h2>Lista de Multas</h2>
+            <ul id="multasList"></ul>
+        </div>
+    </div>
+
+    <script>
+        function carregarMultas() {
+            fetch('/multas')
+                .then(response => response.json())
+                .then(data => {
+                    const multasList = document.getElementById('multasList');
+                    multasList.innerHTML = '';
+                    data.forEach(multa => {
+                        const li = document.createElement('li');
+                        li.innerHTML = `
+                            <div>
+                                <strong>ID do Empréstimo:</strong> ${multa.emprestimo_id}<br>
+                                <strong>Valor:</strong> R$ ${multa.valor.toFixed(2)}<br>
+                                <strong>Data da Multa:</strong> ${new Date(multa.data_multa).toLocaleDateString()}<br>
+                                <strong>Pago:</strong> ${multa.pago ? 'Sim' : 'Não'}
+                            </div>
+                            <div>
+                                <button class="edit" onclick="editarMulta(${multa.id})">Editar</button>
+                                <button class="remove" onclick="excluirMulta(${multa.id})">Excluir</button>
+                            </div>
+                        `;
+                        li.classList.add('multa-item');
+                        multasList.appendChild(li);
+                    });
+                })
+                .catch(error => {
+                    console.error('Erro ao carregar multas:', error.message);
+                    // Exibir mensagem de erro para o usuário, se necessário
+                });
+        }
+
+        function cadastrarMulta(event) {
+            event.preventDefault();
+            const emprestimo_id = document.getElementById('emprestimo_id').value;
+            const valor = document.getElementById('valor').value;
+            const data_multa = document.getElementById('data_multa').value;
+            const pago = document.getElementById('pago').value;
+
+            fetch('/multas', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ emprestimo_id, valor, data_multa, pago })
+            })
+            .then(response => {
+                if (response.ok) {
+                    alert('Multa cadastrada com sucesso');
+                    carregarMultas();
+                } else {
+                    throw new Error('Erro ao cadastrar multa');
+                }
+            })
+            .catch(error => {
+                console.error('Erro ao processar requisição:', error.message);
+                alert('Erro ao cadastrar multa. Verifique o console para mais informações.');
+            });
+        }
+
+        document.getElementById('multaForm').addEventListener('submit', cadastrarMulta);
+
+        function editarMulta(id) {
+            // Implementar edição de multa aqui
+            alert(`Editar multa com ID ${id}`);
+        }
+
+        function excluirMulta(id) {
+            // Implementar exclusão de multa aqui
+            if (confirm('Tem certeza que deseja excluir esta multa?')) {
+                fetch(`/multas/${id}`, {
+                    method: 'DELETE'
+                })
+                .then(response => {
+                    if (response.ok) {
+                        alert('Multa excluída com sucesso');
+                        carregarMultas();
+                    } else {
+                        throw new Error('Erro ao excluir multa');
+                    }
+                })
+                .catch(error => {
+                    console.error('Erro ao processar requisição:', error.message);
+                    alert('Erro ao excluir multa. Verifique o console para mais informações.');
+                });
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            carregarMultas();
+        });
+    </script>
+
+</body>
+</html>

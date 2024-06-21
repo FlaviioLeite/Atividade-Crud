@@ -1,0 +1,143 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gerenciar Logs</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f0f0f0;
+      display: flex;
+    }
+
+    .sidebar {
+      width: 250px;
+      background-color: #0056b3;
+      color: #ffffff;
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 100%;
+      padding: 20px;
+      box-sizing: border-box;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .sidebar h2 {
+      margin-bottom: 20px;
+    }
+
+    .sidebar a {
+      color: #ffffff;
+      text-decoration: none;
+      padding: 10px 20px;
+      border-radius: 5px;
+      margin-bottom: 10px;
+      transition: background-color 0.3s;
+    }
+
+    .sidebar a:hover {
+      background-color: #004080;
+    }
+
+    .container {
+      margin-left: 250px;
+      padding: 20px;
+      width: calc(100% - 250px);
+      box-sizing: border-box;
+      max-width: 100%;
+      background-color: #fff;
+      border-radius: 5px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .logs-container {
+      margin-top: 20px;
+    }
+
+    .logs-container ul {
+      list-style-type: none;
+      padding: 0;
+    }
+
+    .logs-container li {
+      padding: 15px;
+      margin-bottom: 10px;
+      border: 1px solid #ccc;
+      border-radius: 3px;
+      background-color: #fff;
+    }
+
+    .logs-container li p {
+      margin: 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="sidebar">
+    <h2>Menu</h2>
+    <a href="/">Home</a>
+    <a href="editora">Cadastrar Editora </a>
+    <a href="cadastrar_autor">Cadastrar Autor</a>
+    <a href="index">Cadastrar Livro</a>
+    <a href="categoria">Categorias</a>
+    <a href="detalhes">Detalhes Livros</a>
+    <a href="reservaa">Reservas</a>
+    <a href="emprestimo">Emprestimos</a>
+    <a href="usuari">Usuarios</a>
+    <a href="mult">Multas</a>
+    <a href="lo">Log</a>
+    <!-- Adicione mais links conforme necessário -->
+  </div>
+
+  <div class="container">
+    <h2>Gerenciar Logs</h2>
+
+    <div class="logs-container">
+      <h2>Lista de Logs</h2>
+      <ul id="logsList"></ul>
+    </div>
+  </div>
+
+  <script>
+    function carregarLogs() {
+      fetch('/logs')
+        .then(response => response.json())
+        .then(data => {
+          const logsList = document.getElementById('logsList');
+          logsList.innerHTML = '';
+          data.forEach(log => {
+            const li = document.createElement('li');
+            li.innerHTML = `
+              <p><strong>Data de Alteração:</strong> ${new Date(log.DATA_ALTERACAO).toLocaleString()}</p>
+              <p><strong>Operação:</strong> ${log.OPERACAO}</p>
+              <p><strong>Tabela:</strong> ${log.TABELA}</p>
+              <p><strong>Alteração:</strong> ${log.ALTERACAO}</p>
+            `;
+            logsList.appendChild(li);
+          });
+        })
+        .catch(error => {
+          console.error('Erro ao carregar logs:', error.message);
+          // Exibir mensagem de erro para o usuário, se necessário
+        });
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      carregarLogs();
+    });
+  </script>
+
+</body>
+</html>

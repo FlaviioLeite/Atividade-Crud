@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+<head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -12,7 +13,6 @@
             background-color: #f0f0f0;
             display: flex;
         }
-
         .sidebar {
             width: 250px;
             background-color: #0056b3;
@@ -27,11 +27,9 @@
             flex-direction: column;
             align-items: center;
         }
-
         .sidebar h2 {
             margin-bottom: 20px;
         }
-
         .sidebar a {
             color: #ffffff;
             text-decoration: none;
@@ -40,11 +38,9 @@
             margin-bottom: 10px;
             transition: background-color 0.3s;
         }
-
         .sidebar a:hover {
             background-color: #004080;
         }
-
         .container {
             margin-left: 250px;
             padding: 20px;
@@ -55,23 +51,19 @@
             border-radius: 5px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
-
         h2 {
             text-align: center;
             margin-bottom: 20px;
         }
-
         form {
             display: flex;
             flex-direction: column;
             width: 100%;
         }
-
         label {
             margin-bottom: 10px;
             font-weight: bold;
         }
-
         input[type="text"] {
             padding: 8px;
             margin-bottom: 15px;
@@ -79,7 +71,6 @@
             border-radius: 3px;
             width: 100%;
         }
-
         button[type="submit"] {
             padding: 12px;
             background-color: #007bff;
@@ -89,27 +80,22 @@
             cursor: pointer;
             width: 100%;
         }
-
         button[type="submit"]:hover {
             background-color: #0056b3;
         }
-
         .alert {
             color: red;
             margin-top: 15px;
             text-align: center;
         }
-
         .categorias-container {
             display: block;
             margin-top: 20px;
         }
-
         .categorias-container ul {
             list-style-type: none;
             padding: 0;
         }
-
         .categorias-container li {
             padding: 15px;
             margin-bottom: 10px;
@@ -120,7 +106,6 @@
             justify-content: space-between;
             align-items: center;
         }
-
         .categorias-container li button {
             padding: 8px 12px;
             background-color: #dc3545;
@@ -129,19 +114,15 @@
             border-radius: 15px;
             cursor: pointer;
         }
-
         .categorias-container li button.edit {
             background-color: #ffc107;
         }
-
         .categorias-container li button.edit:hover {
             background-color: #ffca2c;
         }
-
         .categorias-container li button.remove {
             margin-left: 10px;
         }
-
         .categorias-container li button.remove:hover {
             background-color: #e74c3c;
         }
@@ -150,14 +131,17 @@
 <body>
     <div class="sidebar">
         <h2>Menu</h2>
-        <a href="http://localhost:3000">Home</a>
-        <a href="editora">Cadastrar Editora</a>
-        <a href="cadastrar_autor">Cadastrar Autor</a>
-        <a href="index">Cadastrar Livro</a>
-        <a href="categoria">Categorias</a>
-        <a href="detalhes">detalhes Livros</a>
-        <a href="reservaa">Reservas</a>
-        <a href="emprestimo">Emprestimos</a>
+    <a href="/">Home</a>
+    <a href="editora">Cadastrar Editora </a>
+    <a href="cadastrar_autor">Cadastrar Autor</a>
+    <a href="index">Cadastrar Livro</a>
+    <a href="categoria">Categorias</a>
+    <a href="detalhes">Detalhes Livros</a>
+    <a href="reservaa">Reservas</a>
+    <a href="emprestimo">Emprestimos</a>
+    <a href="usuari">Usuarios</a>
+    <a href="mult">Multas</a>
+    <a href="lo">Log</a>
         <!-- Adicione mais links conforme necessário -->
     </div>
 
@@ -177,6 +161,7 @@
             <ul id="categoriasList"></ul>
         </div>
     </div>
+
     <script>
         function carregarCategorias() {
             fetch('http://localhost:3000/categorias')
@@ -208,11 +193,11 @@
                     // Exibir mensagem de erro para o usuário, se necessário
                 });
         }
-    
+
         function cadastrarCategoria(event) {
             event.preventDefault();
             const descricao = document.getElementById('descricao').value;
-    
+
             if (descricao) {
                 fetch('http://localhost:3000/categorias', {
                     method: 'POST',
@@ -235,9 +220,10 @@
                 });
             }
         }
-    
+
         document.getElementById('categoriaForm').addEventListener('submit', cadastrarCategoria);
-    
+        document.getElementById('pesquisarCategoria').addEventListener('input', carregarCategorias);
+
         function editarCategoria(id, descricaoAtual) {
             const form = document.createElement('form');
             form.innerHTML = `
@@ -245,11 +231,11 @@
                 <input type="text" id="novaDescricao" name="novaDescricao" value="${descricaoAtual}" required>
                 <button type="submit">Atualizar</button>
             `;
-    
+
             form.addEventListener('submit', (event) => {
                 event.preventDefault();
                 const novaDescricao = document.getElementById('novaDescricao').value;
-    
+
                 if (novaDescricao) {
                     fetch(`http://localhost:3000/categorias/${id}`, {
                         method: 'PUT',
@@ -272,12 +258,12 @@
                     });
                 }
             });
-    
+
             const categoriasList = document.getElementById('categoriasList');
             categoriasList.innerHTML = '';
             categoriasList.appendChild(form);
         }
-    
+
         function excluirCategoria(id) {
             if (confirm('Tem certeza que deseja excluir esta categoria?')) {
                 fetch(`http://localhost:3000/categorias/${id}`, {
@@ -297,12 +283,10 @@
                 });
             }
         }
-    
+
         document.addEventListener('DOMContentLoaded', () => {
             carregarCategorias();
         });
     </script>
-    
-    
 </body>
 </html>

@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cadastrar Editora</title>
+    <title>Cadastrar Usuário</title>
 </head>
 <style>
     body {
@@ -74,7 +74,7 @@
         font-weight: bold;
     }
 
-    input[type="text"] {
+    input[type="text"], input[type="email"] {
         padding: 8px;
         margin-bottom: 15px;
         border: 1px solid #ccc;
@@ -102,17 +102,17 @@
         text-align: center;
     }
 
-    .editoras-container {
+    .usuarios-container {
         display: block;
         margin-top: 20px;
     }
 
-    .editoras-container ul {
+    .usuarios-container ul {
         list-style-type: none;
         padding: 0;
     }
 
-    .editoras-container li {
+    .usuarios-container li {
         padding: 15px;
         margin-bottom: 10px;
         border: 1px solid #ccc;
@@ -123,7 +123,7 @@
         align-items: center;
     }
 
-    .editoras-container li button {
+    .usuarios-container li button {
         padding: 8px 12px;
         background-color: #dc3545;
         color: white;
@@ -132,19 +132,19 @@
         cursor: pointer;
     }
 
-    .editoras-container li button.edit {
+    .usuarios-container li button.edit {
         background-color: #ffc107;
     }
 
-    .editoras-container li button.edit:hover {
+    .usuarios-container li button.edit:hover {
         background-color: #ffca2c;
     }
 
-    .editoras-container li button.remove {
+    .usuarios-container li button.remove {
         margin-left: 10px;
     }
 
-    .editoras-container li button.remove:hover {
+    .usuarios-container li button.remove:hover {
         background-color: #e74c3c;
     }
 </style>
@@ -165,158 +165,158 @@
         <a href="usuari">Usuarios</a>
         <a href="mult">Multas</a>
         <a href="lo">Log</a>
-        <!-- Adicione mais links conforme necessário -->
+            <!-- Adicione mais
+        Adicione mais links conforme necessário -->
     </div>
 
     <div class="container">
-        <h2>Cadastrar Editora</h2>
-        <form id="editoraForm">
+        <h2>Cadastrar Usuário</h2>
+        <form id="usuarioForm">
             <label for="nome">Nome:</label>
             <input type="text" id="nome" name="nome" required>
-            <label for="localizacao">Localização:</label>
-            <input type="text" id="localizacao" name="localizacao" required>
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" required>
             <button type="submit">Cadastrar</button>
         </form>
 
-        <div class="editoras-container">
-            <h2>Lista de Editoras</h2>
-            <input type="text" id="pesquisarEditora" placeholder="Pesquisar editora...">
-            <ul id="editorasList"></ul>
+        <div class="usuarios-container">
+            <h2>Lista de Usuários</h2>
+            <input type="text" id="pesquisarUsuario" placeholder="Pesquisar usuário...">
+            <ul id="usuariosList"></ul>
         </div>
     </div>
 
     <script>
-        function carregarEditoras() {
-            fetch('http://localhost:3000/editoras')
+        function carregarUsuarios() {
+            fetch('http://localhost:3000/usuarios')
                 .then(response => response.json())
                 .then(data => {
-                    const pesquisarTexto = document.getElementById('pesquisarEditora').value.toLowerCase();
-                    const editorasList = document.getElementById('editorasList');
-                    editorasList.innerHTML = '';
-                    data.forEach(editora => {
-                        if (editora.nome.toLowerCase().includes(pesquisarTexto)) {
+                    const pesquisarTexto = document.getElementById('pesquisarUsuario').value.toLowerCase();
+                    const usuariosList = document.getElementById('usuariosList');
+                    usuariosList.innerHTML = '';
+                    data.forEach(usuario => {
+                        if (usuario.nome.toLowerCase().includes(pesquisarTexto) || usuario.email.toLowerCase().includes(pesquisarTexto)) {
                             const li = document.createElement('li');
-                            li.textContent = `${editora.nome} - ${editora.localizacao}`;
+                            li.textContent = `${usuario.nome} - ${usuario.email}`;
                             const editButton = document.createElement('button');
                             editButton.textContent = 'Editar';
                             editButton.classList.add('edit');
-                            editButton.addEventListener('click', () => editarEditora(editora.id, editora.nome, editora.localizacao));
+                            editButton.addEventListener('click', () => editarUsuario(usuario.id, usuario.nome, usuario.email));
                             const removeButton = document.createElement('button');
                             removeButton.textContent = 'Excluir';
                             removeButton.classList.add('remove');
-                            removeButton.addEventListener('click', () => excluirEditora(editora.id));
+                            removeButton.addEventListener('click', () => excluirUsuario(usuario.id));
                             li.appendChild(editButton);
                             li.appendChild(removeButton);
-                            editorasList.appendChild(li);
+                            usuariosList.appendChild(li);
                         }
                     });
                 })
                 .catch(error => {
-                    console.error('Erro ao carregar editoras:', error.message);
+                    console.error('Erro ao carregar usuários:', error.message);
                     // Exibir mensagem de erro para o usuário, se necessário
                 });
         }
 
-        function cadastrarEditora(event) {
+        function cadastrarUsuario(event) {
             event.preventDefault();
             const nome = document.getElementById('nome').value;
-            const localizacao = document.getElementById('localizacao').value;
+            const email = document.getElementById('email').value;
 
-            if (nome && localizacao) {
-                fetch('http://localhost:3000/editoras', {
+            if (nome && email) {
+                fetch('http://localhost:3000/usuarios', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify({ nome, localizacao })
+                    body: JSON.stringify({ nome, email })
                 })
                 .then(response => {
                     if (response.ok) {
-                        alert('Editora cadastrada com sucesso');
-                        carregarEditoras();
+                        alert('Usuário cadastrado com sucesso');
+                        carregarUsuarios();
                     } else {
-                        throw new Error('Erro ao cadastrar editora');
+                        throw new Error('Erro ao cadastrar usuário');
                     }
                 })
                 .catch(error => {
                     console.error('Erro ao processar requisição:', error.message);
-                    alert('Erro ao cadastrar editora. Verifique o console para mais informações.');
+                    alert('Erro ao cadastrar usuário. Verifique o console para mais informações.');
                 });
             }
         }
 
-        document.getElementById('editoraForm').addEventListener('submit', cadastrarEditora);
+        document.getElementById('usuarioForm').addEventListener('submit', cadastrarUsuario);
 
-        function editarEditora(id, nomeAtual, localizacaoAtual) {
+        function editarUsuario(id, nomeAtual, emailAtual) {
             const form = document.createElement('form');
             form.innerHTML = `
                 <label for="novoNome">Novo Nome:</label>
                 <input type="text" id="novoNome" name="novoNome" value="${nomeAtual}" required>
-                <label for="novaLocalizacao">Nova Localização:</label>
-                <input type="text" id="novaLocalizacao" name="novaLocalizacao" value="${localizacaoAtual}" required>
+                <label for="novoEmail">Novo Email:</label>
+                <input type="email" id="novoEmail" name="novoEmail" value="${emailAtual}" required>
                 <button type="submit">Atualizar</button>
             `;
 
             form.addEventListener('submit', (event) => {
                 event.preventDefault();
                 const novoNome = document.getElementById('novoNome').value;
-                const novaLocalizacao = document.getElementById('novaLocalizacao').value;
+                const novoEmail = document.getElementById('novoEmail').value;
 
-                if (novoNome && novaLocalizacao) {
-                    fetch(`http://localhost:3000/editoras/${id}`, {
+                if (novoNome && novoEmail) {
+                    fetch(`http://localhost:3000/usuarios/${id}`, {
                         method: 'PUT',
                         headers: {
                             'Content-Type': 'application/json'
                         },
-                        body: JSON.stringify({ nome: novoNome, localizacao: novaLocalizacao })
+                        body: JSON.stringify({ nome: novoNome, email: novoEmail })
                     })
                     .then(response => {
                         if (response.ok) {
-                            alert('Editora atualizada com sucesso');
-                            carregarEditoras();
+                            alert('Usuário atualizado com sucesso');
+                            carregarUsuarios();
                         } else {
-                            throw new Error('Erro ao editar editora');
+                            throw new Error('Erro ao editar usuário');
                         }
                     })
                     .catch(error => {
                         console.error('Erro ao processar requisição:', error.message);
-                        alert('Erro ao editar editora. Verifique o console para mais informações.');
+                        alert('Erro ao editar usuário. Verifique o console para mais informações.');
                     });
                 }
             });
 
-            const editorasList = document.getElementById('editorasList');
-            editorasList.innerHTML = '';
-            editorasList.appendChild(form);
+            const usuariosList = document.getElementById('usuariosList');
+            usuariosList.innerHTML = '';
+            usuariosList.appendChild(form);
         }
 
-        function excluirEditora(id) {
-            if (confirm('Tem certeza que deseja excluir esta editora?')) {
-                fetch(`http://localhost:3000/editoras/${id}`, {
+        function excluirUsuario(id) {
+            if (confirm('Tem certeza que deseja excluir este usuário?')) {
+                fetch(`http://localhost:3000/usuarios/${id}`, {
                     method: 'DELETE'
                 })
                 .then(response => {
                     if (response.ok) {
-                        alert('Editora excluída com sucesso');
-                        carregarEditoras();
+                        alert('Usuário excluído com sucesso');
+                        carregarUsuarios();
                     } else {
-                        throw new Error('Erro ao excluir editora');
+                        throw new Error('Erro ao excluir usuário');
                     }
                 })
                 .catch(error => {
                     console.error('Erro ao processar requisição:', error.message);
-                    alert('Erro ao excluir editora. Verifique o console para mais informações.');
+                    alert('Erro ao excluir usuário. Verifique o console para mais informações.');
                 });
             }
         }
 
-        document.getElementById('pesquisarEditora').addEventListener('input', carregarEditoras);
+        document.getElementById('pesquisarUsuario').addEventListener('input', carregarUsuarios);
 
         document.addEventListener('DOMContentLoaded', () => {
-            carregarEditoras();
+            carregarUsuarios();
         });
     </script>
 
 </body>
 </html>
-
